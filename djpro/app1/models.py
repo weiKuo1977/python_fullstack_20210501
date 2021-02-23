@@ -14,16 +14,35 @@ class BookInfo(models.Model):
         return self.btitle
 
 
+class HeroInfoManager(models.Manager):
+    # 1、改变查询的结果集
+    def all(self):
+        hero = super().all()
+        # 查询标记为未删除的数据
+        hero1 = hero.filter(isDelete=1)
+        return hero1
+
+    def save_data(self, hname, hsex):
+        obj = Heroinfo()
+        obj.hname = hname
+        obj.hsex = hsex
+        obj.save()
+        return obj
+
+
 class Heroinfo(models.Model):
     """英雄类"""
     hname = models.CharField(max_length=25)
     hsex = models.BooleanField(default=False)
     hbook = models.ForeignKey('BookInfo', on_delete=models.CASCADE)
-
-    # type_News=models.ManyToManyField("BookInfo")
+    # 自定义类的模型管理器
+    object = HeroInfoManager()
 
     def __str__(self):
         return self.hname
+
+    class Meta:
+        db_table = "heroinfo"
 
 
 class Areas(models.Model):
